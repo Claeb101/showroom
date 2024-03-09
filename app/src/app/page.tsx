@@ -13,7 +13,7 @@ export default async function Home() {
         <p className="mt-4 text-center text-base">
           Made with 💖 by <a className=" underline" href="https://arulandu.com">Alvan Caleb Arulandu</a>
         </p>
-        <a className="mt-2 block w-fit" href="https://github.com/Claeb101/fruity">
+        <a className="mt-2 block w-fit" href="https://github.com/Claeb101/showroom">
           <img className="h-full" src="https://img.shields.io/github/last-commit/claeb101/showroom" />
         </a>
       </footer>
