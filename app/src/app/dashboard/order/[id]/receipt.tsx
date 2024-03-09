@@ -26,24 +26,32 @@ export const Receipt = ({ order }: { order: any }) => {
           <View>
             <View style={{ textAlign: "center" }}>
               <Text style={{ fontWeight: "bold" }}>Joven Motors</Text>
-              <Text>VJ37+8V4, road, Madurai Main, Kalayarkoil, Tamil Nadu 630551, India</Text>
+              <Text>VJ37+8V4, Road, Madurai Main, Kalayarkoil, Tamil Nadu 630551, India</Text>
             </View>
 
             <View style={{ textAlign: "center", marginVertical: 10 }}>
               <Text>{new Date(order.createdAt).toLocaleString()}</Text>
               <Text>Showroom Agent: {order.employee.name}</Text>
-              <Text>Customer: {order.customer.name} | {order.customer.email}</Text>
+              <Text>
+                Customer: {order.customer.name}
+                {order.customer.phone && ` | ${order.customer.phone}`}
+                {order.customer.email && ` | ${order.customer.email}`}
+              </Text>
               <Text >Order Id: {order.id}</Text>
             </View>
           </View>
           <View>
             <Text style={{ textDecoration: 'underline', marginTop: 10 }}>Items</Text>
-            {order.items.map((item: any) =>
-              <Text key={item.id}>{item.quantity}x --- {item.product.name} --- Rs.{item.price.toFixed(2)} e.a. --- (C {item.product.cgstTaxRate * 100}% S {item.product.sgstTaxRate * 100}%)</Text>
-            )}
+            {order.items.map((item: any) => (
+                <View key={item.id} style={{ marginBottom: 10 }}>
+                  <Text>{item.quantity}x --- {item.product.name} --- Rs.{item.price.toFixed(2)} e.a.</Text>
+                  <Text>Item Total: Rs.{(item.price * item.quantity).toFixed(2)}</Text>
+                  <Text>Tax: (C {item.product.cgstTaxRate * 100}% S {item.product.sgstTaxRate * 100}%) Rs.{((item.price * item.quantity) * (item.product.cgstTaxRate + item.product.sgstTaxRate)).toFixed(2)}</Text>
+                </View>
+            ))}
           </View>
           <View style={{ marginTop: 30, textAlign: "right" }}>
-            <Text>Total: Rs.{order.invoice.amount.toFixed(2)}</Text>
+            <Text>Order Total: Rs.{order.invoice.amount.toFixed(2)}</Text>
             <View style={{marginVertical: 10}}>
               {
                 order.invoice.payments.map((payment: any) => <Text key={payment.id}>({new Date(payment.createdAt).toLocaleString()}) {payment.method} Rs.{payment.amount.toFixed(2)}</Text>)
