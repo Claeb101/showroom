@@ -26,13 +26,17 @@ export const Receipt = ({ order }: { order: any }) => {
           <View>
             <View style={{ textAlign: "center" }}>
               <Text style={{ fontWeight: "bold" }}>Joven Motors</Text>
-              <Text>VJ37+8V4, road, Madurai Main, Kalayarkoil, Tamil Nadu 630551, India</Text>
+              <Text>VJ37+8V4, Road, Madurai Main, Kalayarkoil, Tamil Nadu 630551, India</Text>
             </View>
 
             <View style={{ textAlign: "center", marginVertical: 10 }}>
               <Text>{new Date(order.createdAt).toLocaleString()}</Text>
               <Text>Showroom Agent: {order.employee.name}</Text>
-              <Text>Customer: {order.customer.name} | {order.customer.email}</Text>
+              <Text>
+                Customer: {order.customer.name}
+                {order.customer.phone && ` | ${order.customer.phone}`}
+                {order.customer.email && ` | ${order.customer.email}`}
+              </Text>
               <Text >Order Id: {order.id}</Text>
             </View>
           </View>
