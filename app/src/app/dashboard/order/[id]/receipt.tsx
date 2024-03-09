@@ -39,7 +39,7 @@ export const Receipt = ({ order }: { order: any }) => {
           <View>
             <Text style={{ textDecoration: 'underline', marginTop: 10 }}>Items</Text>
             {order.items.map((item: any) => (
-                <View key={item.id}>
+                <View key={item.id} style={{ marginBottom: 10 }}>
                   <Text>{item.quantity}x --- {item.product.name} --- Rs.{item.price.toFixed(2)} e.a.</Text>
                   <Text>Item Total: Rs.{(item.price * item.quantity).toFixed(2)}</Text>
                   <Text>Tax: (C {item.product.cgstTaxRate * 100}% S {item.product.sgstTaxRate * 100}%) Rs.{((item.price * item.quantity) * (item.product.cgstTaxRate + item.product.sgstTaxRate)).toFixed(2)}</Text>
