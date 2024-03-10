@@ -4,6 +4,7 @@ import { OrderItem } from "@prisma/client";
 import { Document, Font, PDFDownloadLink, PDFViewer, Page, Text, View } from "@react-pdf/renderer";
 
 import { StyleSheet } from '@react-pdf/renderer'
+import {Table, TableBody, TableCell, TableHeader, TableRow} from "@/components/ui/table";
 
 Font.register({
   family: 'Custom',
@@ -19,6 +20,10 @@ Font.register({
 });
 
 export const Receipt = ({ order }: { order: any }) => {
+  // Calculate total item total and total tax
+  const totalItemTotal = order.items.reduce((acc: number, item: any) => acc + (item.price * item.quantity), 0);
+  const totalTax = order.items.reduce((acc: number, item: any) => acc + ((item.price * item.quantity) * (item.product.cgstTaxRate + item.product.sgstTaxRate)), 0);
+
   const Doc = () => (
     <Document title={`order_${order.id}`} style={{ fontFamily: "Custom" }}>
       <Page size="A4">
@@ -42,13 +47,35 @@ export const Receipt = ({ order }: { order: any }) => {
           </View>
           <View>
             <Text style={{ textDecoration: 'underline', marginTop: 10 }}>Items</Text>
-            {order.items.map((item: any) => (
-                <View key={item.id} style={{ marginBottom: 10 }}>
-                  <Text>{item.quantity}x --- {item.product.name} --- Rs.{item.price.toFixed(2)} e.a.</Text>
-                  <Text>Item Total: Rs.{(item.price * item.quantity).toFixed(2)}</Text>
-                  <Text>Tax: (C {item.product.cgstTaxRate * 100}% S {item.product.sgstTaxRate * 100}%) Rs.{((item.price * item.quantity) * (item.product.cgstTaxRate + item.product.sgstTaxRate)).toFixed(2)}</Text>
-                </View>
-            ))}
+            <Table style={{ marginTop: 5 }}>
+              <TableHeader>
+                <TableCell>Quantity</TableCell>
+                <TableCell>Item Code</TableCell>
+                <TableCell>Unit Price</TableCell>
+                <TableCell>Item Total</TableCell>
+                <TableCell>Tax</TableCell>
+              </TableHeader>
+              <TableBody>
+                {order.items.map((item: any) => (
+                    <TableRow key={item.id}>
+                      <TableCell>{item.quantity}</TableCell>
+                      <TableCell>{item.product.code}</TableCell>
+                      <TableCell>Rs.{item.price.toFixed(2)}</TableCell>
+                      <TableCell>Rs.{(item.price * item.quantity).toFixed(2)}</TableCell>
+                      <TableCell colSpan={2}>
+                        (C {item.product.cgstTaxRate * 100}% S {item.product.sgstTaxRate * 100}%)
+                        Rs.{((item.price * item.quantity) * (item.product.cgstTaxRate + item.product.sgstTaxRate)).toFixed(2)}
+                      </TableCell>
+                    </TableRow>
+                ))}
+                {/* Display Item Total and Total Tax */}
+                <TableRow>
+                  <TableCell colSpan={3}></TableCell>
+                  <TableCell>Rs.{totalItemTotal.toFixed(2)}</TableCell>
+                  <TableCell colSpan={2}>Rs.{totalTax.toFixed(2)}</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
           </View>
           <View style={{ marginTop: 30, textAlign: "right" }}>
             <Text>Order Total: Rs.{order.invoice.amount.toFixed(2)}</Text>
