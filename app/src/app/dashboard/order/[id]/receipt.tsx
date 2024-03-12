@@ -19,6 +19,62 @@ Font.register({
 });
 
 export const Receipt = ({ order }: { order: any }) => {
+  // Calculate total item total and total tax
+  const totalItemTotal = order.items.reduce((acc: number, item: any) => acc + (item.price * item.quantity), 0);
+  const totalTax = order.items.reduce((acc: number, item: any) => acc + ((item.price * item.quantity) * (item.product.cgstTaxRate + item.product.sgstTaxRate)), 0);
+
+  const styles = StyleSheet.create({
+    container: {
+      padding: 20,
+    },
+    underline: {
+      textDecoration: 'underline',
+      marginTop: 10,
+    },
+    table: {
+      width: "100%",
+      marginTop: 5,
+    },
+    tableHeader: {
+      fontWeight: "bold",
+      marginBottom: 1,
+    },
+    tableRow: {
+      flexDirection: "row",
+      borderBottomColor: "black",
+    },
+    quantityTableCell: {
+      flex:1,
+      borderRightColor: "black",
+      padding: 5,
+    },
+    itemCodeTableCell: {
+      flex:3,
+      borderRightColor: "black",
+      padding: 5,
+    },
+    tableCell: {
+      flex: 2,
+      borderRightColor: "black",
+      padding: 5,
+    },
+    lastTableCell: {
+      flex: 2,
+      padding: 5,
+    },
+    totalRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginTop: 15,
+    },
+    totalText: {
+      flex: 2,
+      padding: 5,
+      marginTop: 0,
+      textAlign: "left",
+   },
+
+  });
   const Doc = () => (
     <Document title={`order_${order.id}`} style={{ fontFamily: "Custom" }}>
       <Page size="A4">
@@ -37,13 +93,40 @@ export const Receipt = ({ order }: { order: any }) => {
             </View>
           </View>
           <View>
-            <Text style={{ textDecoration: 'underline', marginTop: 10 }}>Items</Text>
-            {order.items.map((item: any) =>
-              <Text key={item.id}>{item.quantity}x --- {item.product.name} --- Rs.{item.price.toFixed(2)} e.a. --- (C {item.product.cgstTaxRate * 100}% S {item.product.sgstTaxRate * 100}%)</Text>
-            )}
+            <Text style={styles.underline}>Items</Text>
+            <View style={styles.table}>
+              <View style={[styles.tableRow, styles.tableHeader]}>
+                <Text style={styles.quantityTableCell}>Qty.</Text>
+                <Text style={styles.itemCodeTableCell}>Item Code</Text>
+                <Text style={styles.tableCell}>Unit Price</Text>
+                <Text style={styles.tableCell}>Item Total</Text>
+                <Text style={styles.lastTableCell}>Tax</Text>
+              </View>
+              {order.items.map((item: any) => (
+                  <View key={item.id} style={styles.tableRow}>
+                    <Text style={styles.quantityTableCell}>{item.quantity}</Text>
+                    <Text style={styles.itemCodeTableCell}>{item.product.name}</Text>
+                    <Text style={styles.tableCell}>Rs.{item.price.toFixed(2)}</Text>
+                    <Text style={styles.tableCell}>Rs.{(item.price * item.quantity).toFixed(2)}</Text>
+                    <Text style={styles.lastTableCell}>
+                      Rs.{((item.price * item.quantity) * (item.product.cgstTaxRate + item.product.sgstTaxRate)).toFixed(2)}
+                      {"\n"}
+                      (C {item.product.cgstTaxRate * 100}% S {item.product.sgstTaxRate * 100}%)
+                    </Text>
+                  </View>
+              ))}
+              <View style={[styles.totalRow, { borderBottomWidth: 0 }]}>
+                <Text style={[styles.quantityTableCell, styles.totalText]}></Text>
+                <Text style={[styles.itemCodeTableCell, styles.totalText]}></Text>
+                <Text style={[styles.tableCell, styles.totalText]}></Text>
+                <Text style={[styles.tableCell, styles.totalText]}>Rs.{totalItemTotal.toFixed(2)}</Text>
+                <Text style={[styles.lastTableCell, styles.totalText]}>Rs.{totalTax.toFixed(2)}</Text>
+              </View>
+            </View>
           </View>
+
           <View style={{ marginTop: 30, textAlign: "right" }}>
-            <Text>Total: Rs.{order.invoice.amount.toFixed(2)}</Text>
+            <Text>Order Total: Rs.{order.invoice.amount.toFixed(2)}</Text>
             <View style={{marginVertical: 10}}>
               {
                 order.invoice.payments.map((payment: any) => <Text key={payment.id}>({new Date(payment.createdAt).toLocaleString()}) {payment.method} Rs.{payment.amount.toFixed(2)}</Text>)
